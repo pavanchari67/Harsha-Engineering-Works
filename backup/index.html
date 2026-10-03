@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Harsha Engineering Works</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<nav>
+    <div class="brand">
+        <div class="gear-wrap">
+            <span class="gear-icon" id="mainGearIcon" onclick="uiToggleGear(event)">⚙️</span>
+            <div class="gear-menu" id="mainGearMenu">
+                <button onclick="uiShowModal('proprietorDlg')">Proprietor</button>
+                <button onclick="uiShowModal('infoDlg')">Info</button>
+                <button id="workerAccessOpt" onclick="initWorkerFlow()">Worker Login</button>
+            </div>
+        </div>
+        <h1 onclick="switchTab('clientTab')">Harsha Engineering Works</h1>
+    </div>
+    
+    <div class="nav-actions">
+        <button class="btn-solid" id="triggerLogin" onclick="startAuthFlow()">Sign IN / UP</button>
+
+        <div class="user-box" id="userBoxArea">
+            <button class="user-avatar-btn" onclick="uiToggleUserMenu(event)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </button>
+            <div class="user-dropdown" id="userMenuDrop">
+                <div class="user-info-head">
+                    <div class="avatar-circle" id="userLetter">H</div>
+                    <div style="flex:1; overflow:hidden;">
+                        <div class="name-wrapper">
+                            <span class="disp-name" id="txtName">Name</span>
+                            <input type="text" id="valEditName" class="name-edit-field" placeholder="">
+                            <button class="edit-icn-btn" id="btnEditName" onclick="handleNameEdit()" title="Edit Name">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 20h9"></path>
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="disp-phone" id="txtPhone">Phone</div>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="processLogout()">Logout</button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Client View -->
+<div id="clientTab" class="view-section active">
+    <div class="main-wrapper">
+        <div class="paper-card">
+            <h2>Select Your Equipment</h2>
+            <p>Select the equipment that requires repair or maintenance.</p>
+            <br>
+            <div class="equip-grid">
+                <div class="equip-item" onclick="pickEquip(this, 'Pump')"><h3>Pump</h3></div>
+                <div class="equip-item" onclick="pickEquip(this, 'Gearbox')"><h3>Gearbox</h3></div>
+                <div class="equip-item" onclick="pickEquip(this, 'Lathe')"><h3>Lathe</h3></div>
+                <div class="equip-item" onclick="pickEquip(this, 'Slotting')"><h3>Slotting</h3></div>
+                <div class="equip-item" onclick="pickEquip(this, 'Welding')"><h3>Welding</h3></div>
+                <div class="equip-item" onclick="pickEquip(this, 'Others')"><h3>Others</h3></div>
+            </div>
+        </div>
+
+        <div class="paper-card" id="formDetailsBlock" style="display:none;">
+            <div class="card-top">
+                <h2>Problem Details</h2>
+                <button class="btn-camera" onclick="uiShowModal('mediaChoiceDlg')" title="Add Images">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                </button>
+            </div>
+            
+            <label>Selected Equipment</label>
+            <input type="text" id="inpEquip" placeholder="" readonly>
+
+            <div id="wrapTypeSel">
+                <label>Equipment Type</label>
+                <select id="selEquipType"><option value="">Select type</option></select>
+            </div>
+
+            <div id="wrapCustomEquip" style="display: none;">
+                <label>Specify Your Equipment / Service Needed</label>
+                <input type="text" id="inpCustom" placeholder="">
+            </div>
+
+            <label>Describe Your Problem</label>
+            <textarea id="txtProblem" placeholder=""></textarea>
+
+            <div class="thumb-grid" id="thumbArea"></div>
+
+            <input type="file" id="sysCam" accept="image/*" capture="environment" style="display:none;" onchange="readPics(event)">
+            <input type="file" id="sysGal" accept="image/*" multiple style="display:none;" onchange="readPics(event)">
+
+            <button class="btn-submit" onclick="submitJobRequest()">Submit Repair Request</button>
+        </div>
+    </div>
+</div>
+
+<!-- Admin/Worker View -->
+<div id="workerTab" class="view-section">
+    <div class="main-wrapper">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap: 10px;">
+            <h2>Worker Dashboard</h2>
+            <button class="btn-exit-worker" onclick="exitWorkerMode()">Logout</button>
+        </div>
+        <br>
+        <div class="dash-metrics">
+            <div class="metric-box"><h3 id="cTotal">0</h3><p>Total Requests</p></div>
+            <div class="metric-box"><h3 id="cPending">0</h3><p>Pending</p></div>
+            <div class="metric-box"><h3 id="cDone">0</h3><p>Completed</p></div>
+        </div>
+        <div class="paper-card">
+            <h2>Customer Repair Requests</h2>
+            <div id="jobListArea"><p>No repair requests yet.</p></div>
+        </div>
+    </div>
+</div>
+
+<!-- Global Notification -->
+<div class="alert-toast" id="glbToast"></div>
+
+<!-- Lightbox -->
+<div class="lightbox-view" id="lbOverlay" onclick="uiCloseLb()">
+    <img id="lbImg" src="" alt="Zoomed Problem Image">
+</div>
+
+<!-- Proprietor Box -->
+<div class="dialog-overlay" id="proprietorDlg">
+    <div class="dlg-content">
+        <button class="btn-close-dlg" onclick="uiHideModal('proprietorDlg')">X</button>
+        <h2>Proprietor Details</h2>
+        <div class="shop-info-box">
+            <p><strong>Name:</strong> M. RAMBABU</p>
+            <p><strong>Phone:</strong> 9866654338</p>
+            <p><strong>Email:</strong> harshapavan143@gmail.com</p>
+            <p><strong>Address:</strong> IDA KONDAPALLI AP</p>
+        </div>
+    </div>
+</div>
+
+<!-- Info Box -->
+<div class="dialog-overlay" id="infoDlg">
+    <div class="dlg-content">
+        <button class="btn-close-dlg" onclick="uiHideModal('infoDlg')">X</button>
+        <h2>About Us</h2>
+        <div class="shop-info-box">
+            <p>This Engineering Workshop is operated by a single owner/worker who handles customer requests, machine repairs, maintenance, and workshop operations. The workshop provides services such as pump and gearbox repair, lathe work, slotting, welding, and other engineering works.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Worker Auth -->
+<div class="dialog-overlay" id="workerAuthDlg">
+    <div class="dlg-content">
+        <button class="btn-close-dlg" onclick="uiHideModal('workerAuthDlg')">X</button>
+        <h2>Worker Login</h2>
+        
+        <div id="wAuthPhoneBox">
+            <label>Enter Registered Worker Phone Number</label>
+            <input type="tel" id="wPhoneVal" placeholder="" maxlength="10">
+            <button class="btn-submit" onclick="requestWorkerCode()">Send OTP</button>
+        </div>
+        
+        <div id="wAuthCodeBox" style="display: none;">
+            <label>Enter 4-digit OTP</label>
+            <input type="text" id="wCodeVal" placeholder="" maxlength="4">
+            <button class="btn-submit" onclick="confirmWorkerCode()">Verify & Login</button>
+        </div>
+    </div>
+</div>
+
+<!-- Image Source Selector -->
+<div class="dialog-overlay pic-choice-dialog" id="mediaChoiceDlg">
+    <div class="dlg-content">
+        <button class="btn-close-dlg" onclick="uiHideModal('mediaChoiceDlg')">X</button>
+        <h2>Add Image</h2>
+        <p style="color:gray;">Choose how you want to add the image</p>
+        <div class="upload-options">
+            <button class="opt-btn" onclick="fireCamera()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                    <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+                Take Photo
+            </button>
+            <button class="opt-btn" onclick="fireGallery()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                Gallery
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Client Auth -->
+<div class="dialog-overlay" id="clientAuthDlg">
+    <div class="dlg-content">
+        <button class="btn-close-dlg" onclick="uiHideModal('clientAuthDlg')">X</button>
+        <h2 id="authHeading">Sign Up</h2>
+        
+        <div id="regBlock">
+            <label>Enter Name</label>
+            <input type="text" id="newNameVal" placeholder="">
+            <label>Enter Phone Number</label>
+            <input type="tel" id="newPhoneVal" placeholder="" maxlength="10">
+            <button class="btn-submit" onclick="reqClientCode('signup')">Send OTP</button>
+            <button class="text-link" onclick="swapToLogin()">Already registered? Login Here</button>
+        </div>
+        
+        <div id="loginBlock" style="display: none;">
+            <label>Enter Registered Phone Number</label>
+            <input type="tel" id="existPhoneVal" placeholder="" maxlength="10">
+            <button class="btn-submit" onclick="reqClientCode('login')">Send OTP</button>
+            <button class="text-link" onclick="swapToReg()">New user? Sign Up Here</button>
+        </div>
+        
+        <div id="clientCodeBlock" style="display: none;">
+            <label>Enter 4-digit OTP</label>
+            <input type="text" id="clientOtpVal" placeholder="" maxlength="4">
+            <button class="btn-submit" onclick="verifyClientCode()">Verify & Login</button>
+        </div>
+    </div>
+</div>
+
+<!-- Status Updater -->
+<div class="dialog-overlay" id="statusEditDlg">
+    <div class="dlg-content">
+        <button class="btn-close-dlg" onclick="uiHideModal('statusEditDlg')">X</button>
+        <h2>Repair Request Details</h2>
+        <div id="jobFullDetails"></div>
+        <br>
+        <label>Update Job Status</label>
+        <select id="statusPicker">
+            <option>New</option>
+            <option>In progress</option>
+            <option>Completed</option>
+        </select>
+        <button class="btn-submit" onclick="saveJobStatus()">Update Status</button>
+    </div>
+</div>
+
+<footer>Harsha Engineering Works - IDA KONDAPALLI AP</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
